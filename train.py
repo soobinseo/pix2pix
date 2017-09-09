@@ -43,6 +43,7 @@ def main():
     num_batch = len(mixture) // hp.batch_size
 
     g = Graph()
+    global_step = 0
 
     with g.graph.as_default():
 
@@ -62,11 +63,12 @@ def main():
                     sess.run(g.update_D, feed_dict={g.mixture:batch_mixture, g.true_vocal:batch_vocal})
                     sess.run(g.update_G, feed_dict={g.mixture:batch_mixture, g.true_vocal:batch_vocal})
 
-                    if i % 100 == 0:
+                    global_step += 1
+                    if global_step % 100 == 0:
                         disc_loss, gen_loss, l1_loss, summary = sess.run([g.wgan_loss, g.gen_loss, g.l1_loss, g.merged], feed_dict={g.mixture: batch_mixture, g.true_vocal: batch_vocal})
                         print "step %d, disc_loss:%.4f, gen_loss:%.4f, l1_loss:%.4f" %(i,disc_loss, gen_loss, l1_loss)
-                        saver.save(sess, hp.save_dir+"/model_%d.ckpt" % (epoch*num_batch + i))
-                        train_writer.add_summary(summary, epoch*num_batch + i)
+                        saver.save(sess, hp.save_dir+"/model_%d.ckpt" % (global_step))
+                        train_writer.add_summary(summary, global_step)
 
 
 if __name__ == '__main__':

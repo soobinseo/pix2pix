@@ -11,8 +11,8 @@ class Graph:
 
             gen, fake_D, real_D = network(self.mixture, self.true_vocal)
 
-            self.wgan_loss = tf.reduce_mean(real_D) - tf.reduce_mean(fake_D)
-            self.gen_loss = tf.reduce_mean(fake_D)
+            self.wgan_loss = -tf.reduce_mean(real_D) + tf.reduce_mean(fake_D)
+            self.gen_loss = -tf.reduce_mean(fake_D)
             self.l1_loss = tf.reduce_mean(tf.abs(self.true_vocal - gen))
 
             disc_op = tf.train.AdamOptimizer(learning_rate=0.0001)

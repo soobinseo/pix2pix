@@ -138,7 +138,7 @@ def discriminator(tensor, reuse=False, scope="discriminator"):
                         filter_height=3,
                         filter_width=3,
                         stride=1,
-                        activation_fn=tf.nn.sigmoid,
+                        activation_fn=None,
                         scope="output_disc")
 
 

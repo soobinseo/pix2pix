@@ -26,6 +26,7 @@ class Graph:
 
             self.update_D = disc_op.apply_gradients(disc_grad)
             self.update_G = gen_op.apply_gradients(gen_grad)
+            self.clip_D = [var.assign(tf.clip_by_value(var, -0.01, 0.01))for var in disc_variables]
 
             tf.summary.scalar("generator_loss", self.gen_loss+self.l1_loss)
             tf.summary.scalar("discriminator_loss", self.wgan_loss)
@@ -60,7 +61,7 @@ def main():
                 mixture, vocals = dataset_shuffling(mixture, vocals)
                 for i in range(num_batch):
                     batch_mixture, batch_vocal = get_batch(mixture, vocals, i, hp.batch_size)
-                    sess.run(g.update_D, feed_dict={g.mixture:batch_mixture, g.true_vocal:batch_vocal})
+                    sess.run([g.update_D, g.clip_D], feed_dict={g.mixture:batch_mixture, g.true_vocal:batch_vocal})
                     sess.run(g.update_G, feed_dict={g.mixture:batch_mixture, g.true_vocal:batch_vocal})
 
                     global_step += 1
